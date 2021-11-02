@@ -5,10 +5,11 @@ import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiImChatScencegroupMessageSendV2Request;
 import com.dingtalk.api.response.OapiImChatScencegroupMessageSendV2Response;
-import com.dingtalk.constant.AppConstant;
 import com.dingtalk.constant.UrlConstant;
+import com.dingtalk.properties.DingTalkProperties;
 import com.dingtalk.util.AccessTokenUtil;
 import com.taobao.api.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class RobotsController {
 
     private static final String cardMSG = "测试卡片消息";
+
+    @Autowired
+    private DingTalkProperties dingTalkProperties;
+
 
     @RequestMapping(value = "/robots")
     public String helloRobots(@RequestBody(required = false) JSONObject json
@@ -48,10 +53,10 @@ public class RobotsController {
      */
     public String actionCardMsg() {
         try {
-            String accessToken = AccessTokenUtil.getAccessToken();
+            String accessToken = AccessTokenUtil.getAccessToken(dingTalkProperties.getAppKey(), dingTalkProperties.getAppSecret());
             DingTalkClient client = new DefaultDingTalkClient(UrlConstant.SCENCEGROUP_MESSAGE_SEND_V2);
             OapiImChatScencegroupMessageSendV2Request req = new OapiImChatScencegroupMessageSendV2Request();
-            req.setTargetOpenConversationId(AppConstant.OPEN_CONVERSATION_ID);
+            req.setTargetOpenConversationId(dingTalkProperties.getOpenConversationId());
             // 这个消息模板ID是 官方通用测试模板
             req.setMsgTemplateId("offical_template_test_action_card");
             req.setMsgParamMapString("{     " +
@@ -62,7 +67,7 @@ public class RobotsController {
                 "\"action_url_1\": \"www.dingtalk.com\"," +
                 "\"btn_title_2\": \"按钮二号\"," +
                 "\"action_url_2\": \"www.dingtalk.com\"}");
-            req.setRobotCode(AppConstant.ROBOT_CODE);
+            req.setRobotCode(dingTalkProperties.getRobotCode());
             OapiImChatScencegroupMessageSendV2Response rsp = client.execute(req, accessToken);
             System.out.println(rsp.getBody());
             return rsp.getBody();

@@ -7,8 +7,10 @@ import com.dingtalk.api.request.OapiV2UserGetuserinfoRequest;
 import com.dingtalk.api.response.OapiV2UserGetResponse;
 import com.dingtalk.api.response.OapiV2UserGetuserinfoResponse;
 import com.dingtalk.constant.UrlConstant;
+import com.dingtalk.properties.DingTalkProperties;
 import com.dingtalk.util.AccessTokenUtil;
 import com.taobao.api.ApiException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +18,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserManager {
+
+
+    @Autowired
+    private DingTalkProperties dingTalkProperties;
 
     /**
      * 根据免登授权码获取用户id
@@ -25,7 +31,7 @@ public class UserManager {
      */
     public String getUserId(String authCode) throws ApiException {
         // 1. 获取access_token
-        String accessToken = AccessTokenUtil.getAccessToken();
+        String accessToken = AccessTokenUtil.getAccessToken(dingTalkProperties.getAppKey(), dingTalkProperties.getAppSecret());
 
         // 2. 获取用户信息
         DingTalkClient client = new DefaultDingTalkClient(UrlConstant.GET_USER_INFO_URL);
@@ -45,7 +51,7 @@ public class UserManager {
      */
     public String getUserName(String userId) throws ApiException {
         // 1. 获取access_token
-        String accessToken = AccessTokenUtil.getAccessToken();
+        String accessToken = AccessTokenUtil.getAccessToken(dingTalkProperties.getAppKey(), dingTalkProperties.getAppSecret());
 
         // 2. 获取用户详情
         DingTalkClient client = new DefaultDingTalkClient(UrlConstant.USER_GET_URL);
